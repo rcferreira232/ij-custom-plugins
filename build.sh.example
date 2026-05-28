@@ -1,0 +1,1 @@
+mvn -Dscijava.app.directory=full/path/to/your/ij/directory
