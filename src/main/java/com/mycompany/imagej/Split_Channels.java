@@ -5,15 +5,6 @@ import ij.ImagePlus;
 import ij.plugin.filter.PlugInFilter;
 import ij.process.ImageProcessor;
 
-/**
-* Plugin para transformar uma imagem RGB em três imagens em escala de cinza e apresentar as imagens resultantes na tela do ImageJ.
-* O split de canais é uma operação, onde uma imagem colorida é dividida em seus componentes de cor individuais. 
-* Uma imagem RGB, ela é composta por três canais: vermelho (Red), verde (Green) e azul (Blue). 
-* O plugin "Split Channels" pega uma imagem RGB e cria três novas imagens em escala de cinza, cada uma representando um dos canais de cor.
-* O desenvolvimento do plugin, deve evitar uso da bliblioteca do ImageJ diretamente, pois ela abstrai a manipulação de pixels.
-* No desenvolvimento do plugin, deve-se manipular os pixels diretamente, utilizando as classes ImageProcessor e ImagePlus do ImageJ para acessar e modificar os dados de pixel.
-*/
-
 public class Split_Channels implements PlugInFilter {
 
     @Override

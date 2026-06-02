@@ -6,14 +6,6 @@ import ij.WindowManager;
 import ij.plugin.PlugIn;
 import ij.process.ImageProcessor;
 
-/**
-* Plugin para gerar uma imagem RGB através da junção das imagens 8-bits geradas pelos plugins anteriores e que eram representantes dos canais.
-* O merge de canais é o processo inverso do split de canais. Ele pega as três imagens em escala de cinza (representando os canais vermelho, verde e azul) e as combina para criar uma única imagem RGB.
-* Cada pixel da imagem RGB resultante é formado pela combinação dos valores correspondentes dos pixels nas três imagens de entrada.
-* O desenvolvimento do plugin, deve evitar uso da bliblioteca do ImageJ diretamente, pois ela abstrai a manipulação de pixels.
-* No desenvolvimento do plugin, deve-se manipular os pixels diretamente, utilizando as classes ImageProcessor e ImagePlus do ImageJ para acessar e modificar os dados de pixel.
-*/
-
 public class Merge_Channels implements PlugIn {
 
     @Override
