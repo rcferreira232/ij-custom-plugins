@@ -9,11 +9,6 @@ public class Split_Channels implements PlugInFilter {
 
     @Override
     public int setup(String arg, ImagePlus imp) {
-        if (imp == null) {
-            IJ.noImage();
-            return DONE;
-        }
-
         return DOES_RGB; 
     }
 
@@ -35,7 +30,7 @@ public class Split_Channels implements PlugInFilter {
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                pixelValue = ip.getPixel(x, y, pixelValue);
+                ip.getPixel(x, y, pixelValue);
                 IJ.log("Pixel: " + pixelValue[0] + " " + pixelValue[1] + " " + pixelValue[2]);
 
                 newPixelValue = pixelValue[0]; // Canal Vermelho
