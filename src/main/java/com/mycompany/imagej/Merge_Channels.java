@@ -22,6 +22,7 @@ public class Merge_Channels implements PlugIn {
 
         if (imgR.getType() != ImagePlus.GRAY8 || imgG.getType() != ImagePlus.GRAY8 || imgB.getType() != ImagePlus.GRAY8) {
             IJ.error("Merge Channels", "As imagens devem ser do tipo 8-bit (GRAY8).");
+            return;
         }
         
         int width = imgR.getWidth();
