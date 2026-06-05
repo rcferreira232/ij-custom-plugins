@@ -4,7 +4,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
-import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 
@@ -26,24 +25,18 @@ public class Convert_Rgb_To_Grey implements PlugIn {
             return;
         }
         
-        // Verificar se é uma imagem RGB
         if (imagePlus.getType() != ImagePlus.COLOR_RGB) {
             IJ.error("A imagem deve ser do tipo RGB!");
             return;
         }
         
-        // Mostrar diálogo para seleção de método
         if (!showDialog()) {
             return;
         }
-        
-        // Aplicar a conversão
+
         convertToGrayscale(imagePlus);
     }
     
-    /**
-     * Exibe o diálogo para seleção do método e opções
-     */
     private boolean showDialog() {
         GenericDialog dialog = new GenericDialog("Converter RGB para Cinza");
         
@@ -64,7 +57,6 @@ public class Convert_Rgb_To_Grey implements PlugIn {
             return false;
         }
         
-        // Obter seleção do método
         String selected = dialog.getNextChoice();
         if (selected.contains("Média")) {
             selectedMethod = METHOD_AVERAGE;
@@ -74,15 +66,11 @@ public class Convert_Rgb_To_Grey implements PlugIn {
             selectedMethod = METHOD_LIGHTNESS;
         }
         
-        // Obter opção de criar nova imagem
         createNewImage = dialog.getNextBoolean();
         
         return true;
     }
     
-    /**
-     * Aplica a conversão para escala de cinza
-     */
     private void convertToGrayscale(ImagePlus imagePlus) {
         ImageProcessor processor = imagePlus.getProcessor();
         
@@ -90,69 +78,61 @@ public class Convert_Rgb_To_Grey implements PlugIn {
             IJ.error("Processador não é do tipo ColorProcessor!");
             return;
         }
+
+        int width = processor.getWidth();
+        int height = processor.getHeight();
         
-        ColorProcessor colorProcessor = (ColorProcessor) processor;
-        ByteProcessor grayProcessor = convertToGrayscaleProcessor(colorProcessor);
+        int pixelValue[] = {0, 0, 0};
+        int newPixelValue[] = {0};
+        
         
         if (createNewImage) {
-            // Criar uma nova imagem com a versão em cinza
-            ImagePlus grayImage = new ImagePlus(imagePlus.getTitle() + " (Cinza)", grayProcessor);
+            ImagePlus grayImage = IJ.createImage("Grayscale Image", "8-bit", width, height, 1);
+            ImageProcessor grayProcessor = grayImage.getProcessor();
+            convertToGrayscaleProcessor(grayProcessor);
             grayImage.show();
         } else {
-            // Substituir a imagem original
-            imagePlus.setProcessor(grayProcessor);
+            convertToGrayscaleProcessor(processor);
+            imagePlus.setProcessor(processor);
             imagePlus.repaintWindow();
         }
     }
     
-    /**
-     * Converte um ColorProcessor para ByteProcessor em escala de cinza
-     */
-    private ByteProcessor convertToGrayscaleProcessor(ColorProcessor colorProcessor) {
-        int width = colorProcessor.getWidth();
-        int height = colorProcessor.getHeight();
-        byte[] grayPixels = new byte[width * height];
-        
-        // Obter os pixels da imagem original
-        int[] rgbPixels = (int[]) colorProcessor.getPixels();
-        
-        // Converter cada pixel
-        for (int i = 0; i < rgbPixels.length; i++) {
-            int rgb = rgbPixels[i];
-            
-            // Extrair componentes RGB
-            int r = (rgb >> 16) & 0xFF;
-            int g = (rgb >> 8) & 0xFF;
-            int b = rgb & 0xFF;
-            
-            // Calcular valor em cinza baseado no método selecionado
-            int gray = calculateGrayscale(r, g, b);
-            
-            grayPixels[i] = (byte) gray;
+    private ImageProcessor convertToGrayscaleProcessor(ImageProcessor processor) {
+        int width = processor.getWidth();
+        int height = processor.getHeight();
+
+        int pixelValue[] = {0, 0, 0};
+        int newPixelValue[] = {0};
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                pixelValue = processor.getPixel(x, y, pixelValue);
+                int r = pixelValue[0];
+                int g = pixelValue[1];
+                int b = pixelValue[2];
+                
+                newPixelValue[0] = calculateGrayscale(r, g, b);
+                processor.putPixel(x, y, newPixelValue);
+            }
         }
-        
-        return new ByteProcessor(width, height, grayPixels, null);
+
+        return processor;
     }
     
-    /**
-     * Calcula o valor em cinza para um pixel RGB usando o método selecionado
-     */
     private int calculateGrayscale(int r, int g, int b) {
         int gray;
         
         switch (selectedMethod) {
             case METHOD_AVERAGE:
-                // Método da Média: (R + G + B) / 3
                 gray = (r + g + b) / 3;
                 break;
                 
             case METHOD_LUMINOSITY:
-                // Método da Luminosidade: 0.299*R + 0.587*G + 0.114*B
                 gray = (int) Math.round(0.299 * r + 0.587 * g + 0.114 * b);
                 break;
                 
             case METHOD_LIGHTNESS:
-                // Método da Claridade: (max(R,G,B) + min(R,G,B)) / 2
                 int max = Math.max(r, Math.max(g, b));
                 int min = Math.min(r, Math.min(g, b));
                 gray = (max + min) / 2;
@@ -162,7 +142,6 @@ public class Convert_Rgb_To_Grey implements PlugIn {
                 gray = (r + g + b) / 3;
         }
         
-        // Garantir que o valor está no intervalo 0-255
         return Math.max(0, Math.min(255, gray));
     }
 }
