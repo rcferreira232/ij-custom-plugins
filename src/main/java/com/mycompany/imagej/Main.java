@@ -23,6 +23,7 @@ public class Main {
         // IJ.runPlugIn(Process_Pixels.class.getName(), "");
         // IJ.runPlugIn(Split_Channels.class.getName(), "");
         // IJ.runPlugIn(Merge_Channels.class.getName(), "");
-        IJ.runPlugIn(Peer_To_Peer_Operations.class.getName(), "");
+        // IJ.runPlugIn(Peer_To_Peer_Operations.class.getName(), "");
+        IJ.runPlugIn(Convert_Rgb_To_Grey.class.getName(), "");
     }
 }

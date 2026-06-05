@@ -8,21 +8,12 @@ import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 
-/**
- * Plugin para converter uma imagem RGB em Escala de Cinza utilizando três métodos diferentes.
- * 
- * Métodos implementados:
- * 1. Average Method: Cinza = (R + G + B) / 3
- * 2. Luminosity Method (ITU-R 601-2): Cinza = 0.299*R + 0.587*G + 0.114*B
- * 3. Lightness Method: Cinza = (max(R,G,B) + min(R,G,B)) / 2
- */
 public class Convert_Rgb_To_Grey implements PlugIn {
     
     private static final int METHOD_AVERAGE = 0;
     private static final int METHOD_LUMINOSITY = 1;
     private static final int METHOD_LIGHTNESS = 2;
     
-    // Variáveis para armazenar as opções do usuário
     private int selectedMethod = METHOD_LUMINOSITY;
     private boolean createNewImage = true;
     
@@ -30,7 +21,6 @@ public class Convert_Rgb_To_Grey implements PlugIn {
     public void run(String arg) {
         ImagePlus imagePlus = ij.WindowManager.getCurrentImage();
         
-        // Validar se há uma imagem aberta
         if (imagePlus == null) {
             IJ.error("Nenhuma imagem aberta!");
             return;
