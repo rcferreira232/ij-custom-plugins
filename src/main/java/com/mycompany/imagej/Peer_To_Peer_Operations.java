@@ -69,21 +69,27 @@ public class Peer_To_Peer_Operations implements PlugIn, DialogListener {
         contrast = Math.max(-255, Math.min(255, contrast));
         solarization = Math.max(0, Math.min(255, solarization));
         desaturation = Math.max(0, Math.min(1, desaturation));
-        
-        if (brightness != 0) {
-            applyBrightness(workingProcessor, brightness);
-        }
-        
-        if (contrast != 0) {
-            applyContrast(workingProcessor, contrast);
-        }
-        
-        if (solarization > 0) {
-            applySolarization(workingProcessor, solarization);
-        }
-        
-        if (desaturation > 0) {
-            applyDesaturation(workingProcessor, desaturation);
+
+        int width = originalProcessor.getWidth();
+        int height = originalProcessor.getHeight();
+
+        int pixelValue[] = {0, 0, 0};
+        int newPixelValue[] = {0, 0, 0};
+
+        float contrastFactor = calcContrastFactor((int)contrast);
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                pixelValue = originalProcessor.getPixel(x, y, pixelValue);
+                
+                int media = (pixelValue[0] + pixelValue[1] + pixelValue[2]) / 3;
+
+                newPixelValue[0] = calcPixel(pixelValue[0], (int)brightness, (int)contrast, desaturation, (int)solarization, media, contrastFactor);
+                newPixelValue[1] = calcPixel(pixelValue[1], (int)brightness, (int)contrast, desaturation, (int)solarization, media, contrastFactor);
+                newPixelValue[2] = calcPixel(pixelValue[2], (int)brightness, (int)contrast, desaturation, (int)solarization, media, contrastFactor);
+
+                workingProcessor.putPixel(x, y, newPixelValue);
+            }
         }
         
         imagePlus.setProcessor(workingProcessor);
@@ -92,69 +98,44 @@ public class Peer_To_Peer_Operations implements PlugIn, DialogListener {
         return true;
     }
     
-    private void applyBrightness(ImageProcessor processor, double value) {
-        byte[] pixels = (byte[]) processor.getPixels();
-        
-        for (int i = 0; i < pixels.length; i++) {
-            int pixel = pixels[i] & 0xFF;
-            pixel += value;
-            pixel = Math.max(0, Math.min(255, pixel));
-            pixels[i] = (byte) pixel;
-        }
-    }
-    
-    private void applyContrast(ImageProcessor processor, double value) {
-        byte[] pixels = (byte[]) processor.getPixels();
-        int midpoint = 128;
-        
-        for (int i = 0; i < pixels.length; i++) {
-            int pixel = pixels[i] & 0xFF;
-            // Aplicar contraste em torno do ponto médio (128)
-            pixel = (int) (midpoint + (pixel - midpoint) * value);
-            pixel = Math.max(0, Math.min(255, pixel));
-            pixels[i] = (byte) pixel;
-        }
-    }
-    
-    private void applySolarization(ImageProcessor processor, double value) {
-        byte[] pixels = (byte[]) processor.getPixels();
-        int threshold = (int) (255 * (value / 100.0));
-        
-        for (int i = 0; i < pixels.length; i++) {
-            int pixel = pixels[i] & 0xFF;
-            if (pixel < threshold) {
-                pixel = 255 - pixel;
-            }
-            pixels[i] = (byte) pixel;
-        }
-    }
+    public int calcPixel(int pixelValue, int brightness, int contrast, Double desaturation, int solarization, int media, float fatorC) {
+		
+		pixelValue = calcBrightness(pixelValue, brightness);
+		pixelValue = calcContrast(pixelValue, fatorC);
+		pixelValue = calcDesaturation(pixelValue, desaturation, media);
+		pixelValue = calcSolarization(pixelValue, solarization);
+		
+		return pixelValue;	
+	}
+	
+	public float calcContrastFactor(int contrast) {
+		float fator = (259f*(contrast + 255f))/(255f*(259f-contrast));
+		return fator;
+	}
 
-    private void applyDesaturation(ImageProcessor processor, double value) {
-        // Converter para escala de cinza parcial
-        int[] rgbPixels = (int[]) processor.getPixels();
-        double factor = value / 100.0;
-        
-        for (int i = 0; i < rgbPixels.length; i++) {
-            int rgb = rgbPixels[i];
-            
-            // Extrair componentes RGB
-            int r = (rgb >> 16) & 0xFF;
-            int g = (rgb >> 8) & 0xFF;
-            int b = rgb & 0xFF;
-            
-            // Calcular valor em escala de cinza
-            int gray = (int) (0.299 * r + 0.587 * g + 0.114 * b);
-            
-            // Interpolar entre cor original e cinza
-            int newR = (int) (r * (1 - factor) + gray * factor);
-            int newG = (int) (g * (1 - factor) + gray * factor);
-            int newB = (int) (b * (1 - factor) + gray * factor);
-            
-            newR = Math.max(0, Math.min(255, newR));
-            newG = Math.max(0, Math.min(255, newG));
-            newB = Math.max(0, Math.min(255, newB));
-            
-            rgbPixels[i] = (0xFF << 24) | (newR << 16) | (newG << 8) | newB;
-        }
-    }
+	public int calcBrightness(int pixelValue, int brightness) {
+		pixelValue = pixelValue + brightness;
+		return pixelValue;
+	}
+	
+	public int calcContrast(int pixelValue, float fatorC ) {
+		pixelValue = (int)((pixelValue-128) * fatorC + 128);
+		return pixelValue;
+	}
+	
+	public int calcDesaturation(int pixelValue, Double desaturation, int media){
+		if(desaturation<1) {
+			pixelValue = (int)(media + ((pixelValue - media) * desaturation));	
+
+		}
+		return pixelValue;
+	}
+	
+	
+	public int calcSolarization(int pixelValue, int solarization) {
+		if(pixelValue < solarization) {
+			pixelValue = 255 - pixelValue;
+		}
+		return pixelValue;
+	}
 }
