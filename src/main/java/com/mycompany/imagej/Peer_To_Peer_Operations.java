@@ -55,7 +55,7 @@ public class Peer_To_Peer_Operations implements PlugIn, DialogListener {
     @Override
     public boolean dialogItemChanged(GenericDialog dialog, AWTEvent event) {
         if (dialog.wasCanceled()) {
-            imagePlus.setProcessor(originalProcessor.duplicate());
+            imagePlus.setProcessor(originalProcessor);
             imagePlus.repaintWindow();
             return true;
         }
@@ -126,7 +126,6 @@ public class Peer_To_Peer_Operations implements PlugIn, DialogListener {
 	public int calcDesaturation(int pixelValue, Double desaturation, int media){
 		if(desaturation<1) {
 			pixelValue = (int)(media + ((pixelValue - media) * desaturation));	
-
 		}
 		return pixelValue;
 	}
