@@ -79,45 +79,39 @@ public class Convert_Rgb_To_Grey implements PlugIn {
             return;
         }
 
-        int width = processor.getWidth();
-        int height = processor.getHeight();
-        
-        int pixelValue[] = {0, 0, 0};
-        int newPixelValue[] = {0};
-        
+        ImageProcessor grayProcessor = convertToGrayscaleProcessor(processor);
         
         if (createNewImage) {
-            ImagePlus grayImage = IJ.createImage("Grayscale Image", "8-bit", width, height, 1);
-            ImageProcessor grayProcessor = grayImage.getProcessor();
-            convertToGrayscaleProcessor(grayProcessor);
+            ImagePlus grayImage = new ImagePlus(imagePlus.getTitle() + " (Cinza)", grayProcessor);
             grayImage.show();
         } else {
-            convertToGrayscaleProcessor(processor);
-            imagePlus.setProcessor(processor);
+            imagePlus.setProcessor(grayProcessor);
             imagePlus.repaintWindow();
         }
     }
     
-    private ImageProcessor convertToGrayscaleProcessor(ImageProcessor processor) {
-        int width = processor.getWidth();
-        int height = processor.getHeight();
+    private ImageProcessor convertToGrayscaleProcessor(ImageProcessor sourceProcessor) {
+        int width = sourceProcessor.getWidth();
+        int height = sourceProcessor.getHeight();
+
+        ImageProcessor targetProcessor = new ij.process.ByteProcessor(width, height);
 
         int pixelValue[] = {0, 0, 0};
         int newPixelValue[] = {0};
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                pixelValue = processor.getPixel(x, y, pixelValue);
+                pixelValue = sourceProcessor.getPixel(x, y, pixelValue);
                 int r = pixelValue[0];
                 int g = pixelValue[1];
                 int b = pixelValue[2];
                 
                 newPixelValue[0] = calculateGrayscale(r, g, b);
-                processor.putPixel(x, y, newPixelValue);
+                targetProcessor.putPixel(x, y, newPixelValue);
             }
         }
 
-        return processor;
+        return targetProcessor;
     }
     
     private int calculateGrayscale(int r, int g, int b) {
