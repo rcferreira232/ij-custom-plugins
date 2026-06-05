@@ -21,7 +21,8 @@ public class Main {
         IJ.run("Clown (14K)");
 
         // IJ.runPlugIn(Process_Pixels.class.getName(), "");
-        IJ.runPlugIn(Split_Channels.class.getName(), "");
-        IJ.runPlugIn(Merge_Channels.class.getName(), "");
+        // IJ.runPlugIn(Split_Channels.class.getName(), "");
+        // IJ.runPlugIn(Merge_Channels.class.getName(), "");
+        IJ.runPlugIn(Peer_To_Peer_Operations.class.getName(), "");
     }
 }
