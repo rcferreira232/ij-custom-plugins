@@ -50,16 +50,15 @@ public class Peer_To_Peer_Operations implements PlugIn, DialogListener {
         
         dialog.addDialogListener(this);
         dialog.showDialog();
+
+        if (dialog.wasCanceled()) {
+            imagePlus.setProcessor(originalProcessor);
+            imagePlus.repaintWindow();
+        }
     }
     
     @Override
     public boolean dialogItemChanged(GenericDialog dialog, AWTEvent event) {
-        if (dialog.wasCanceled()) {
-            imagePlus.setProcessor(originalProcessor);
-            imagePlus.repaintWindow();
-            return true;
-        }
-        
         brightness = dialog.getNextNumber();
         contrast = dialog.getNextNumber();
         solarization = dialog.getNextNumber();
