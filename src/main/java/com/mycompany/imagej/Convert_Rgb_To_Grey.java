@@ -42,9 +42,9 @@ public class Convert_Rgb_To_Grey implements PlugIn {
         
         dialog.addMessage("Selecione o método de conversão:");
         String[] methods = {
-            "Método da Média (Average)",
-            "Método da Luminosidade (ITU-R 601-2)",
-            "Método da Claridade (Lightness)"
+            "Método da Média",
+            "Método da Luminosidade",
+            "Método da Luminosidade Digital"
         };
         dialog.addChoice("Método:", methods, methods[selectedMethod]);
         
