@@ -11,7 +11,7 @@ public class Convert_Rgb_To_Grey implements PlugIn {
     
     private static final int METHOD_AVERAGE = 0;
     private static final int METHOD_LUMINOSITY = 1;
-    private static final int METHOD_LIGHTNESS = 2;
+    private static final int METHOD_LUMINOSITY_DIGITAL = 2;
     
     private int selectedMethod = METHOD_LUMINOSITY;
     private boolean createNewImage = true;
@@ -63,7 +63,7 @@ public class Convert_Rgb_To_Grey implements PlugIn {
         } else if (selected.contains("Luminosidade")) {
             selectedMethod = METHOD_LUMINOSITY;
         } else {
-            selectedMethod = METHOD_LIGHTNESS;
+            selectedMethod = METHOD_LUMINOSITY_DIGITAL;
         }
         
         createNewImage = dialog.getNextBoolean();
@@ -126,14 +126,13 @@ public class Convert_Rgb_To_Grey implements PlugIn {
                 gray = (int) Math.round(0.299 * r + 0.587 * g + 0.114 * b);
                 break;
                 
-            case METHOD_LIGHTNESS:
-                int max = Math.max(r, Math.max(g, b));
-                int min = Math.min(r, Math.min(g, b));
-                gray = (max + min) / 2;
+            case METHOD_LUMINOSITY_DIGITAL:
+                gray = (int) Math.round(0.2125 * r + 0.7154 * g + 0.072 * b);
                 break;
                 
             default:
-                gray = (r + g + b) / 3;
+                IJ.error("Método de conversão desconhecido!");
+                throw new IllegalArgumentException("Método de conversão desconhecido: " + selectedMethod);
         }
         
         return Math.max(0, Math.min(255, gray));
