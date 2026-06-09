@@ -44,7 +44,7 @@ public class Peer_To_Peer_Operations implements PlugIn, DialogListener {
         GenericDialog dialog = new GenericDialog("Peer-to-Peer Operations");
         
         dialog.addSlider("Brilho (Brightness):", -255, 255, brightness);
-        dialog.addSlider("Contraste (Contrast):", -255, 255, contrast);
+        dialog.addSlider("Contraste (Contrast):", -128, 128, contrast);
         dialog.addSlider("Solarização (Solarization):", 0, 255, solarization);
         dialog.addSlider("Dessaturação (Desaturation):", 0, 1, desaturation, 0.01);
         
@@ -65,7 +65,7 @@ public class Peer_To_Peer_Operations implements PlugIn, DialogListener {
         desaturation = dialog.getNextNumber();
         
         brightness = Math.max(-255, Math.min(255, brightness));
-        contrast = Math.max(-255, Math.min(255, contrast));
+        contrast = Math.max(-128, Math.min(128, contrast));
         solarization = Math.max(0, Math.min(255, solarization));
         desaturation = Math.max(0, Math.min(1, desaturation));
 
@@ -96,13 +96,17 @@ public class Peer_To_Peer_Operations implements PlugIn, DialogListener {
         
         return true;
     }
+
+    public int clamp(int value) {
+        return Math.max(0, Math.min(255, value));
+    }
     
     public int calcPixel(int pixelValue, int brightness, int contrast, Double desaturation, int solarization, int media, float fatorC) {
 		
-		pixelValue = calcBrightness(pixelValue, brightness);
-		pixelValue = calcContrast(pixelValue, fatorC);
-		pixelValue = calcDesaturation(pixelValue, desaturation, media);
-		pixelValue = calcSolarization(pixelValue, solarization);
+		pixelValue = clamp(calcBrightness(pixelValue, brightness));
+		pixelValue = clamp(calcContrast(pixelValue, fatorC));
+		pixelValue = clamp(calcDesaturation(pixelValue, desaturation, media));
+		pixelValue = clamp(calcSolarization(pixelValue, solarization));
 		
 		return pixelValue;	
 	}
