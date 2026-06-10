@@ -103,10 +103,10 @@ public class Peer_To_Peer_Operations implements PlugIn, DialogListener {
     
     public int calcPixel(int pixelValue, int brightness, int contrast, Double desaturation, int solarization, int media, float fatorC) {
 		
-		pixelValue = clamp(calcBrightness(pixelValue, brightness));
-		pixelValue = clamp(calcContrast(pixelValue, fatorC));
+		pixelValue = calcBrightness(pixelValue, brightness);
+		pixelValue = calcContrast(pixelValue, fatorC);
 		pixelValue = clamp(calcDesaturation(pixelValue, desaturation, media));
-		pixelValue = clamp(calcSolarization(pixelValue, solarization));
+		pixelValue = calcSolarization(pixelValue, solarization);
 		
 		return pixelValue;	
 	}
