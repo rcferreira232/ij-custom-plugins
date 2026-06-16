@@ -18,12 +18,14 @@ public class Main {
 		System.setProperty("plugins.dir", jarDir);
 
         new ImageJ();
-        IJ.run("Clown (14K)");
+        // IJ.run("Clown (14K)");
+        IJ.run("Blobs (25K)");
 
         // IJ.runPlugIn(Process_Pixels.class.getName(), "");
         // IJ.runPlugIn(Split_Channels.class.getName(), "");
         // IJ.runPlugIn(Merge_Channels.class.getName(), "");
         // IJ.runPlugIn(Peer_To_Peer_Operations.class.getName(), "");
-        IJ.runPlugIn(Convert_Rgb_To_Grey.class.getName(), "");
+        // IJ.runPlugIn(Convert_Rgb_To_Grey.class.getName(), "");
+        IJ.runPlugIn(Histograma_.class.getName(), "");
     }
 }
