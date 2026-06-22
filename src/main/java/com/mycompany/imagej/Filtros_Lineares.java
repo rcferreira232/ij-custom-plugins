@@ -77,7 +77,7 @@ public class Filtros_Lineares implements PlugIn {
                 {1, 1, 1}
         };
 
-        aplicarConvolucao(ip, kernel, 1);
+        aplicarConvolucao(ip, kernel, 9);
     }
 
     private void aplicarPassaAltas(ImageProcessor ip) {
