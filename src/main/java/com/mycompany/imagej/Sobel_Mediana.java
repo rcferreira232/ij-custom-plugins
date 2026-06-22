@@ -4,11 +4,11 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.GenericDialog;
 import ij.plugin.PlugIn;
-import ij.plugin.filter.Convolver;
-import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
 public class Sobel_Mediana implements PlugIn {
+
+    private String filtroSelecionado = "Sobel";
 
     @Override
     public void run(String arg) {
@@ -20,11 +20,17 @@ public class Sobel_Mediana implements PlugIn {
             return;
         }
 
+        if (imp.getType() != ImagePlus.GRAY8) {
+            IJ.showMessage("Erro",
+                    "A imagem precisa estar em tons de cinza (8 bits).");
+            return;
+        }
+
         GenericDialog gd = new GenericDialog("Sobel ou Mediana");
 
         String[] filtros = {
-                "Sobel",
-                "Mediana"
+            "Sobel",
+            "Mediana"
         };
 
         gd.addRadioButtonGroup(
@@ -32,7 +38,7 @@ public class Sobel_Mediana implements PlugIn {
                 filtros,
                 2,
                 1,
-                filtros[0]
+                filtroSelecionado
         );
 
         gd.showDialog();
@@ -40,71 +46,112 @@ public class Sobel_Mediana implements PlugIn {
         if (gd.wasCanceled())
             return;
 
-        String filtro = gd.getNextRadioButton();
+        filtroSelecionado = gd.getNextRadioButton();
 
-        if (filtro.equals("Mediana")) {
-            aplicarMediana(imp);
+        ImageProcessor ip = imp.getProcessor().duplicate();
+
+        if (filtroSelecionado.equals("Sobel")) {
+            aplicarSobel(ip);
         } else {
-            aplicarSobel(imp);
+            aplicarMediana(ip);
         }
     }
 
-    private void aplicarMediana(ImagePlus imp) {
+    private void aplicarSobel(ImageProcessor ip) {
 
-        ImageProcessor mediana = imp.getProcessor().duplicate();
-
-        mediana.medianFilter();
-
-        new ImagePlus("Filtro Mediana", mediana).show();
-    }
-
-    private void aplicarSobel(ImagePlus imp) {
-
-        ImageProcessor original = imp.getProcessor();
-
-        float[] sobelVertical = {
-                -1, 0, 1,
-                -2, 0, 2,
-                -1, 0, 1
+        int[][] kernelVertical = {
+            {-1, 0, 1},
+            {-2, 0, 2},
+            {-1, 0, 1}
         };
 
-        float[] sobelHorizontal = {
-                -1, -2, -1,
-                 0,  0,  0,
-                 1,  2,  1
+        int[][] kernelHorizontal = {
+            {-1, -2, -1},
+            {0, 0, 0},
+            {1, 2, 1}
         };
 
-        ImageProcessor vertical = original.duplicate();
-        ImageProcessor horizontal = original.duplicate();
+        ImageProcessor gx = ip.duplicate();
+        ImageProcessor gy = ip.duplicate();
 
-        Convolver convolver = new Convolver();
+        aplicarConvolucao(gx, kernelVertical);
+        aplicarConvolucao(gy, kernelHorizontal);
 
-        convolver.convolve(vertical, sobelVertical, 3, 3);
-        convolver.convolve(horizontal, sobelHorizontal, 3, 3);
-
-        new ImagePlus("Sobel Vertical", vertical).show();
-        new ImagePlus("Sobel Horizontal", horizontal).show();
-
-        int largura = original.getWidth();
-        int altura = original.getHeight();
-
-        ByteProcessor combinado = new ByteProcessor(largura, altura);
+        ImageProcessor g = ip.duplicate();
+        int largura = ip.getWidth();
+        int altura = ip.getHeight();
 
         for (int y = 0; y < altura; y++) {
-
             for (int x = 0; x < largura; x++) {
+                int sobelX = gx.getPixel(x, y);
+                int sobelY = gy.getPixel(x, y);
+                int resultado = (int) Math.sqrt(sobelX * sobelX + sobelY * sobelY);
 
-                double gx = vertical.getPixelValue(x, y);
-                double gy = horizontal.getPixelValue(x, y);
-
-                int valor = (int) Math.sqrt(gx * gx + gy * gy);
-
-                valor = Math.max(0, Math.min(255, valor));
-
-                combinado.putPixel(x, y, valor);
+                g.putPixel(x, y, resultado);
             }
         }
 
-        new ImagePlus("Sobel Combinado", combinado).show();
+        mostrarImagem(gx, "Sobel Vertical");
+        mostrarImagem(gy, "Sobel Horizontal");
+        mostrarImagem(g, "Sobel Combinado");
+    }
+
+    private void aplicarConvolucao(ImageProcessor ip, int[][] kernel) {
+
+        int largura = ip.getWidth();
+        int altura = ip.getHeight();
+
+        ImageProcessor copia = ip.duplicate();
+
+        for (int x = 1; x < largura - 1; x++) {
+            for (int y = 1; y < altura - 1; y++) {
+
+                int soma = 0;
+
+                for (int i = -1; i <= 1; i++) {
+                    for (int j = -1; j <= 1; j++) {
+
+                        soma += copia.getPixel(x + i, y + j)
+                                * kernel[i + 1][j + 1];
+                    }
+                }
+
+                ip.putPixel(x, y, soma);
+            }
+        }
+    }
+
+    private void aplicarMediana(ImageProcessor ip) {
+
+        int largura = ip.getWidth();
+        int altura = ip.getHeight();
+
+        ImageProcessor copia = ip.duplicate();
+
+        for (int y = 1; y < altura - 1; y++) {
+            for (int x = 1; x < largura - 1; x++) {
+
+                int[] vizinhanca = new int[9];
+                int indice = 0;
+
+                for (int j = -1; j <= 1; j++) {
+                    for (int i = -1; i <= 1; i++) {
+                        vizinhanca[indice++] =
+                                copia.getPixel(x + i, y + j);
+                    }
+                }
+
+                java.util.Arrays.sort(vizinhanca);
+
+                ip.putPixel(x, y, vizinhanca[4]);
+            }
+        }
+
+        mostrarImagem(ip, "Filtro Mediana");
+    }
+
+    private void mostrarImagem(ImageProcessor ip, String titulo) {
+        ImagePlus resultado = new ImagePlus(titulo, ip);
+        resultado.show();
     }
 }
