@@ -32,7 +32,7 @@ public class Histograma_ implements PlugIn, DialogListener {
     
     public void IG(ImagePlus imagem) {
         ImagePlus imagemCopia = imagem.duplicate();
-        imagemCopia.setTitle(imagem.getShortTitle() + " - Processada");
+        imagemCopia.setTitle(imagem.getShortTitle() + " - Cópia");
         imagemCopia.show();
         
         mostrarHistograma(imagem, "Histograma Original de " + imagem.getShortTitle());
@@ -132,11 +132,6 @@ public class Histograma_ implements PlugIn, DialogListener {
         Double[] vetorP = new Double[256];
         Double[] vetorPA = new Double[256];
         
-        for (int i = 0; i < 256; i++) {
-            vetorTons[i] = 0;
-            vetorPA[i] = 0.0;
-        }
-        
         for (int x = 0; x < larguraImagem; x++) {    
             for (int y = 0; y < alturaImagem; y++) {
                 valorPixel = processador.getPixel(x, y);
@@ -179,7 +174,8 @@ public class Histograma_ implements PlugIn, DialogListener {
             yValues[i] = histogram[i];
         }
         
-        Plot plot = new Plot(titulo, "Intensidade", "Frequência", xValues, yValues);
+        Plot plot = new Plot(titulo, "Intensidade", "Frequência");
+        plot.add("separate", xValues, yValues);
         plot.show();
     }
 }

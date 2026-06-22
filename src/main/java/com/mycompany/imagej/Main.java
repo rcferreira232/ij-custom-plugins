@@ -19,7 +19,7 @@ public class Main {
 
         new ImageJ();
         // IJ.run("Clown (14K)");
-        IJ.run("Blobs (25K)");
+        IJ.run("Boats");
 
         // IJ.runPlugIn(Process_Pixels.class.getName(), "");
         // IJ.runPlugIn(Split_Channels.class.getName(), "");
