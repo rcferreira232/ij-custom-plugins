@@ -74,8 +74,8 @@ public class Sobel_Mediana implements PlugIn {
         ImageProcessor gx = ip.duplicate();
         ImageProcessor gy = ip.duplicate();
 
-        aplicarConvolucao(gx, kernelVertical);
-        aplicarConvolucao(gy, kernelHorizontal);
+        aplicarConvolucao(gx, kernelHorizontal);
+        aplicarConvolucao(gy, kernelVertical);
 
         ImageProcessor g = ip.duplicate();
         int largura = ip.getWidth();
@@ -91,8 +91,8 @@ public class Sobel_Mediana implements PlugIn {
             }
         }
 
-        mostrarImagem(gx, "Sobel Vertical");
-        mostrarImagem(gy, "Sobel Horizontal");
+        mostrarImagem(gx, "Sobel Horizontal`");
+        mostrarImagem(gy, "Sobel Vertical");
         mostrarImagem(g, "Sobel Combinado");
     }
 
