@@ -26,6 +26,8 @@ public class Main {
         // IJ.runPlugIn(Merge_Channels.class.getName(), "");
         // IJ.runPlugIn(Peer_To_Peer_Operations.class.getName(), "");
         // IJ.runPlugIn(Convert_Rgb_To_Grey.class.getName(), "");
-        IJ.runPlugIn(Histograma_.class.getName(), "");
+        // IJ.runPlugIn(Histograma_.class.getName(), "");
+        IJ.runPlugIn(Filtros_Lineares.class.getName(), "");
+        // IJ.runPlugIn(Sobel_Mediana.class.getName(), "");
     }
 }

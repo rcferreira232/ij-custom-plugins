@@ -66,9 +66,9 @@ public class Sobel_Mediana implements PlugIn {
         };
 
         int[][] kernelHorizontal = {
-            {-1, -2, -1},
+            {1, 2, 1},
             {0, 0, 0},
-            {1, 2, 1}
+            {-1, -2, -1}
         };
 
         ImageProcessor gx = ip.duplicate();
