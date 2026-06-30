@@ -85,12 +85,12 @@ public class Operacoes_Morfologicas_Binarias implements PlugIn {
         img.setPixels(resultado.getPixels());
     }
 
-    private int aplicarOperacao(ImageProcessor img, int x, int y, int[][] se, String tipo) {
+    private int aplicarOperacao(ImageProcessor img, int x, int y, int[][] elemt, String tipo) {
         switch (tipo) {
             case "dilatacao":
                 for (int dy = -1; dy <= 1; dy++) {
                     for (int dx = -1; dx <= 1; dx++) {
-                        if (se[dy + 1][dx + 1] == 1 && img.getPixel(x + dx, y + dy) == 255) {
+                        if (elemt[dy + 1][dx + 1] == 1 && img.getPixel(x + dx, y + dy) == 255) {
                             return 255;
                         }
                     }
@@ -100,7 +100,7 @@ public class Operacoes_Morfologicas_Binarias implements PlugIn {
             case "erosao":
                 for (int dy = -1; dy <= 1; dy++) {
                     for (int dx = -1; dx <= 1; dx++) {
-                        if (se[dy + 1][dx + 1] == 1 && img.getPixel(x + dx, y + dy) == 0) {
+                        if (elemt[dy + 1][dx + 1] == 1 && img.getPixel(x + dx, y + dy) == 0) {
                             return 0;
                         }
                     }
