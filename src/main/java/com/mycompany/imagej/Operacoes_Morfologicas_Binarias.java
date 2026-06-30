@@ -40,7 +40,6 @@ public class Operacoes_Morfologicas_Binarias implements PlugIn {
                 processar(copiaBorda, "erosao");
                 subtrairImagens(processor, copiaBorda);
                 break;
-                
             case "Esqueletização":
                 processor = esqueletizar(processor);
                 break;
@@ -64,16 +63,13 @@ public class Operacoes_Morfologicas_Binarias implements PlugIn {
         return true;
     }
 
-    // Método principal para processar Dilatação e Erosão
     private void processar(ImageProcessor img, String tipo) {
         int width = img.getWidth();
         int height = img.getHeight();
         
-        // Cria uma nova imagem vazia baseada no tipo da imagem original
         ImageProcessor resultado = img.createProcessor(width, height);
         ImageProcessor copia = img.duplicate();
 
-        // Elemento Estruturante: CRUZ 3x3
         int[][] elementoEstruturante = {
             {0, 1, 0},
             {1, 1, 1},
@@ -115,39 +111,33 @@ public class Operacoes_Morfologicas_Binarias implements PlugIn {
         return img.getPixel(x, y);
     }
     
-    // Algoritmo de Lantuéjoul para esqueletização
     private ImageProcessor esqueletizar(ImageProcessor imgOriginal) {
         int width = imgOriginal.getWidth();
         int height = imgOriginal.getHeight();
         
-        // Imagem vazia para acumular o esqueleto
         ImageProcessor esqueleto = imgOriginal.createProcessor(width, height); 
         ImageProcessor imagemAtual = imgOriginal.duplicate();
 
         while (!isImageEmpty(imagemAtual)) {
             // 1. Erodí a imagem atual
             ImageProcessor erodida = imagemAtual.duplicate();
-            processar(erodida, "erosao");
+            processar(erodida, "erosao"); // esse proce
             
-            // 2. Abertura da imagem atual (é a dilatação da imagem erodida)
             ImageProcessor abertura = erodida.duplicate();
             processar(abertura, "dilatacao");
             
-            // 3. Subtrai a abertura da imagem atual
+
             ImageProcessor diferenca = imagemAtual.duplicate();
             subtrairImagens(diferenca, abertura);
             
-            // 4. Une os resquícios (diferença) ao esqueleto
             unirImagens(esqueleto, diferenca);
             
-            // 5. A imagem para o próximo passo do laço passa a ser a imagem erodida
             imagemAtual = erodida;
         }
         
         return esqueleto;
     }
 
-    // Subtração de conjuntos
     private void subtrairImagens(ImageProcessor original, ImageProcessor subtrair) {
         int width = original.getWidth();
         int height = original.getHeight();
@@ -161,7 +151,6 @@ public class Operacoes_Morfologicas_Binarias implements PlugIn {
         }
     }
     
-    // União de conjuntos (para acumular o esqueleto)
     private void unirImagens(ImageProcessor original, ImageProcessor paraUnir) {
         int width = original.getWidth();
         int height = original.getHeight();
@@ -177,7 +166,6 @@ public class Operacoes_Morfologicas_Binarias implements PlugIn {
         }
     }
     
-    // Verifica se a imagem já sumiu por completo
     private boolean isImageEmpty(ImageProcessor img) {
         int width = img.getWidth();
         int height = img.getHeight();
