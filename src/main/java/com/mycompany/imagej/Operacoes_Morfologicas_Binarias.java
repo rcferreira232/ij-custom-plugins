@@ -36,7 +36,6 @@ public class Operacoes_Morfologicas_Binarias implements PlugIn {
         switch (operacao) {
             case "Borda":
                 ImageProcessor copiaBorda = processor.duplicate();
-                // A borda é a imagem original menos a imagem erodida
                 processar(copiaBorda, "erosao");
                 subtrairImagens(processor, copiaBorda);
                 break;
