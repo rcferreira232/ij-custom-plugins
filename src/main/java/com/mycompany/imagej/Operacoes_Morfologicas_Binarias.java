@@ -119,7 +119,7 @@ public class Operacoes_Morfologicas_Binarias implements PlugIn {
 
         while (!isImageEmpty(imagemAtual)) {
             ImageProcessor erodida = imagemAtual.duplicate();
-            processar(erodida, "erosao"); // esse proce
+            processar(erodida, "erosao");
             
             ImageProcessor abertura = erodida.duplicate();
             processar(abertura, "dilatacao");
