@@ -55,10 +55,8 @@ public class Componentes_Conexos implements PlugInFilter {
             }
         }
 
-        // Fase 2: Pintar os componentes com tons de cinza
         int totalLabels = label - 1;
         if (totalLabels > 0) {
-            // Calcula o incremento (step) de cor para garantir tons distintos
             int colorStep = 255 / totalLabels; 
 
             for (int y = 0; y < height; y++) {
@@ -67,7 +65,6 @@ public class Componentes_Conexos implements PlugInFilter {
                         int grayShade = labels[x][y] * colorStep;
                         ip.putPixel(x, y, grayShade);
                     } else {
-                        // Fundo preto
                         ip.putPixel(x, y, 0);
                     }
                 }
