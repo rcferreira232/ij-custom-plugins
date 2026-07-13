@@ -13,7 +13,6 @@ public class Componentes_Conexos implements PlugInFilter {
 
     @Override
     public int setup(String arg, ImagePlus imp) {
-        // Define que o plugin funcionará apenas em imagens de 8-bits (tons de cinza/binárias)
         return DOES_8G; 
     }
 
@@ -22,36 +21,28 @@ public class Componentes_Conexos implements PlugInFilter {
         int width = ip.getWidth();
         int height = ip.getHeight();
         
-        // Matriz para armazenar a imagem rotulada (J)
         int[][] labels = new int[width][height];
         int label = 1;
 
-        // Arrays auxiliares para definir a Vizinhança-4 (cima, baixo, direita, esquerda)
         int[] dx = {0, 0, 1, -1};
         int[] dy = {1, -1, 0, 0};
 
-        // Fase 1: Identificação e Rotulação dos Componentes
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 
-                // Condição: I(p) != 0 e J(p) == 0
                 if (ip.getPixel(x, y) > 0 && labels[x][y] == 0) {
                     Queue<Point> queue = new LinkedList<>();
                     queue.add(new Point(x, y));
                     labels[x][y] = label;
 
-                    // Processamento da fila (FIFO)
                     while (!queue.isEmpty()) {
                         Point p = queue.poll();
 
-                        // Verifica os vizinhos (q pertencente a A(p))
                         for (int i = 0; i < 4; i++) {
                             int nx = p.x + dx[i];
                             int ny = p.y + dy[i];
 
-                            // Valida os limites da imagem
                             if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                                // Se J(q) == 0 e I(p) == I(q) (ambos são foreground)
                                 if (ip.getPixel(nx, ny) > 0 && labels[nx][ny] == 0) {
                                     labels[nx][ny] = label;
                                     queue.add(new Point(nx, ny));
@@ -59,7 +50,7 @@ public class Componentes_Conexos implements PlugInFilter {
                             }
                         }
                     }
-                    label++; // Incrementa o rótulo para o próximo componente
+                    label++;
                 }
             }
         }
